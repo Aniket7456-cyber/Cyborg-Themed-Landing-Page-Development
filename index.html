@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>NEXUS-7 — Human. Machine. Evolution.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Playfair+Display:ital@1&display=swap" rel="stylesheet"/>
+<style>
+/* ─── BASE ─────────────────────────────────────── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#09090b;
+  --surface:#111113;
+  --border:#1e1e22;
+  --cyan:#22d3ee;
+  --cyan-soft:rgba(34,211,238,.12);
+  --red:#f43f5e;
+  --amber:#f59e0b;
+  --text:#c4c4cc;
+  --muted:#52525b;
+  --white:#f4f4f5;
+  --ff-display:'Bebas Neue',sans-serif;
+  --ff-serif:'Playfair Display',serif;
+  --ff-mono:'DM Mono',monospace;
+  --ff-body:'DM Sans',sans-serif;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:var(--ff-body);overflow-x:hidden;cursor:none;line-height:1.6}
+
+/* ─── CURSOR ───────────────────────────────────── */
+#cur{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;mix-blend-mode:difference}
+#cur-ring{width:40px;height:40px;border:1.5px solid #fff;border-radius:50%;transform:translate(-50%,-50%);transition:width .2s,height .2s,border-color .2s}
+#cur-dot{position:fixed;top:0;left:0;width:5px;height:5px;background:#fff;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:9999;mix-blend-mode:difference}
+
+/* ─── GLOBAL SCROLLBAR ─────────────────────────── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--muted)}
+
+/* ─── NOISE OVERLAY ────────────────────────────── */
+#noise{position:fixed;inset:0;pointer-events:none;z-index:8000;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");background-size:300px}
+
+/* ─── NAV ──────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 5%;
+  background:rgba(9,9,11,.8);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--ff-display);font-size:1.5rem;letter-spacing:.12em;
+  color:var(--white);text-decoration:none;
+}
+.logo-mark{
+  width:28px;height:28px;background:var(--cyan);
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  flex-shrink:0;
+}
+.nav-links{list-style:none;display:flex;gap:32px}
+.nav-links a{
+  font-family:var(--ff-mono);font-size:.7rem;letter-spacing:.15em;
+  color:var(--muted);text-decoration:none;text-transform:uppercase;
+  transition:color .2s;
+}
+.nav-links a:hover{color:var(--white)}
+.nav-pill{
+  font-family:var(--ff-mono);font-size:.7rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:10px 24px;cursor:none;
+  border:1px solid var(--white);color:var(--white);background:transparent;
+  transition:background .2s,color .2s;border-radius:2px;
+}
+.nav-pill:hover{background:var(--white);color:var(--bg)}
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:none}
+.nav-hamburger span{width:22px;height:1.5px;background:var(--white)}
+
+/* ─── HERO ─────────────────────────────────────── */
+.hero{
+  min-height:100vh;display:grid;
+  grid-template-columns:1fr 1fr;
+  align-items:end;padding:140px 5% 80px;
+  position:relative;overflow:hidden;
+  gap:60px;
+}
+/* big background number */
+.hero-bg-text{
+  position:absolute;bottom:-2%;left:-1%;
+  font-family:var(--ff-display);font-size:clamp(160px,22vw,320px);
+  color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.04);
+  letter-spacing:-.02em;pointer-events:none;user-select:none;line-height:1;
+  z-index:0;
+}
+.hero-left{position:relative;z-index:1}
+.hero-eyebrow{
+  font-family:var(--ff-mono);font-size:.7rem;letter-spacing:.25em;
+  color:var(--cyan);text-transform:uppercase;
+  display:flex;align-items:center;gap:12px;margin-bottom:32px;
+}
+.hero-eyebrow::before{content:'';width:24px;height:1px;background:var(--cyan)}
+.blink{animation:blink 1s step-end infinite;color:var(--red)}
+@keyframes blink{50%{opacity:0}}
+
+.hero-h1{
+  font-family:var(--ff-display);
+  font-size:clamp(4.5rem,10vw,9rem);
+  line-height:.92;letter-spacing:.02em;
+  color:var(--white);margin-bottom:32px;
+}
+.hero-h1 em{
+  font-family:var(--ff-serif);font-style:italic;
+  color:var(--cyan);display:block;font-size:.65em;
+  letter-spacing:.01em;line-height:1.1;
+}
+.hero-sub{
+  font-size:1.05rem;line-height:1.8;color:var(--text);
+  max-width:420px;margin-bottom:48px;font-weight:300;
+}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap}
+.btn-fill{
+  font-family:var(--ff-mono);font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:14px 32px;cursor:none;
+  background:var(--cyan);color:var(--bg);border:1px solid var(--cyan);
+  font-weight:400;transition:background .2s,box-shadow .2s;border-radius:2px;
+}
+.btn-fill:hover{background:transparent;color:var(--cyan);box-shadow:0 0 20px rgba(34,211,238,.2)}
+.btn-ghost{
+  font-family:var(--ff-mono);font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:13px 28px;cursor:none;
+  background:transparent;color:var(--muted);border:1px solid var(--border);
+  transition:border-color .2s,color .2s;border-radius:2px;
+}
+.btn-ghost:hover{border-color:var(--white);color:var(--white)}
+
+/* hero right */
+.hero-right{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;justify-content:flex-end;gap:0;
+  padding-bottom:12px;
+}
+.hero-spec-block{
+  border-top:1px solid var(--border);padding:20px 0;
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+.hero-spec-block:last-child{border-bottom:1px solid var(--border)}
+.spec-k{font-family:var(--ff-mono);font-size:.62rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.spec-v{font-family:var(--ff-mono);font-size:.72rem;color:var(--white);margin-top:4px}
+
+.hero-scroll{
+  position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  font-family:var(--ff-mono);font-size:.58rem;letter-spacing:.2em;
+  color:var(--muted);text-transform:uppercase;z-index:2;
+}
+.scroll-bar{width:1px;height:44px;background:linear-gradient(to bottom,var(--muted),transparent);animation:scrollFade 1.8s ease-in-out infinite}
+@keyframes scrollFade{0%,100%{opacity:.3;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.2)}}
+
+/* particle canvas */
+#hero-canvas{position:absolute;inset:0;z-index:0;pointer-events:none}
+
+/* ─── MARQUEE ──────────────────────────────────── */
+.marquee-wrap{
+  overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:14px 0;background:var(--surface);
+}
+.marquee-track{
+  display:flex;gap:64px;white-space:nowrap;
+  animation:marquee 22s linear infinite;
+  font-family:var(--ff-mono);font-size:.68rem;letter-spacing:.18em;
+  color:var(--muted);text-transform:uppercase;
+}
+.marquee-track span{flex-shrink:0}
+.marquee-track .sep{color:var(--cyan);opacity:.5}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ─── SECTION UTILITY ──────────────────────────── */
+section{padding:108px 5%;position:relative}
+.s-label{
+  font-family:var(--ff-mono);font-size:.65rem;letter-spacing:.25em;
+  color:var(--cyan);text-transform:uppercase;
+  display:flex;align-items:center;gap:10px;margin-bottom:18px;
+}
+.s-label::before{content:'';width:16px;height:1px;background:var(--cyan)}
+.s-title{
+  font-family:var(--ff-display);font-size:clamp(2.2rem,5vw,4rem);
+  color:var(--white);line-height:1;letter-spacing:.03em;margin-bottom:18px;
+}
+.s-title em{font-family:var(--ff-serif);font-style:italic;color:var(--cyan);font-size:.85em}
+.s-body{font-size:1rem;line-height:1.8;color:var(--text);font-weight:300;max-width:560px}
+
+/* ─── ABOUT ────────────────────────────────────── */
+.about{background:var(--surface);border-top:1px solid var(--border)}
+.about-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:100px;
+  align-items:start;max-width:1160px;margin:0 auto;
+}
+.about-text p{font-size:1rem;line-height:1.85;color:var(--text);font-weight:300;margin-bottom:20px}
+.about-text p strong{color:var(--white);font-weight:500}
+
+/* spec table */
+.spec-table{width:100%;border-collapse:collapse;margin-bottom:36px}
+.spec-table tr{border-bottom:1px solid var(--border)}
+.spec-table tr:first-child{border-top:1px solid var(--border)}
+.spec-table td{padding:13px 0;font-family:var(--ff-mono);font-size:.7rem;letter-spacing:.06em}
+.spec-table td:first-child{color:var(--muted);text-transform:uppercase}
+.spec-table td:last-child{color:var(--white);text-align:right}
+
+/* capability bars */
+.cap-list{display:flex;flex-direction:column;gap:22px}
+.cap-header{display:flex;justify-content:space-between;margin-bottom:7px;font-family:var(--ff-mono);font-size:.68rem;letter-spacing:.08em}
+.cap-name{color:var(--text)}
+.cap-pct{color:var(--cyan)}
+.cap-bar{height:2px;background:var(--border);overflow:hidden}
+.cap-fill{height:100%;transform:scaleX(0);transform-origin:left;transition:transform 1.4s cubic-bezier(.16,1,.3,1)}
+.cap-fill.c1{background:var(--cyan)}
+.cap-fill.c2{background:var(--red)}
+.cap-fill.c3{background:var(--amber)}
+.cap-list.animate .cap-fill{transform:scaleX(1)}
+
+/* ─── STATS ROW ────────────────────────────────── */
+.stats-row{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+}
+.stat-cell{
+  padding:48px 40px;border-right:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.stat-cell:last-child{border-right:none}
+.stat-num{
+  font-family:var(--ff-display);font-size:clamp(2.4rem,4vw,3.8rem);
+  color:var(--white);line-height:1;display:block;margin-bottom:8px;
+}
+.stat-num .unit{color:var(--cyan);font-size:.6em}
+.stat-desc{font-family:var(--ff-mono);font-size:.62rem;letter-spacing:.15em;color:var(--muted);text-transform:uppercase}
+.stat-cell::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+  transform:scaleX(0);transition:transform .6s;
+}
+.stat-cell:hover::after{transform:scaleX(1)}
+
+/* ─── FEATURES ─────────────────────────────────── */
+.features{background:var(--bg);border-top:1px solid var(--border)}
+.features-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border:1px solid var(--border);margin-top:64px;
+}
+.feat{
+  padding:44px 36px;border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);position:relative;
+  transition:background .3s;
+}
+.feat:nth-child(3n){border-right:none}
+.feat:nth-child(4),.feat:nth-child(5),.feat:nth-child(6){border-bottom:none}
+.feat:hover{background:var(--surface)}
+.feat-num{
+  font-family:var(--ff-mono);font-size:.62rem;letter-spacing:.2em;
+  color:var(--border);margin-bottom:28px;display:block;transition:color .3s;
+}
+.feat:hover .feat-num{color:var(--cyan)}
+.feat-icon{font-size:1.6rem;margin-bottom:18px;display:block}
+.feat-title{
+  font-family:var(--ff-display);font-size:1.3rem;letter-spacing:.06em;
+  color:var(--white);margin-bottom:12px;
+}
+.feat-body{font-size:.9rem;line-height:1.75;color:var(--muted);font-weight:300}
+
+/* ─── TIERS ────────────────────────────────────── */
+.tiers{background:var(--surface);border-top:1px solid var(--border)}
+.tiers-inner{max-width:1160px;margin:0 auto}
+.tiers-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--border);margin-top:64px;
+  border:1px solid var(--border);
+}
+.tier{
+  background:var(--bg);padding:48px 36px;
+  position:relative;transition:background .3s;
+}
+.tier.highlight{background:var(--surface)}
+.tier:hover{background:#0f0f12}
+
+.tier-tag{
+  font-family:var(--ff-mono);font-size:.6rem;letter-spacing:.22em;
+  color:var(--muted);text-transform:uppercase;margin-bottom:24px;
+}
+.tier-name{
+  font-family:var(--ff-display);font-size:2rem;letter-spacing:.06em;
+  color:var(--white);margin-bottom:6px;
+}
+.tier-price{
+  font-family:var(--ff-display);font-size:3.5rem;color:var(--white);
+  line-height:1;margin-bottom:4px;
+}
+.tier.highlight .tier-price{color:var(--cyan)}
+.tier-elite .tier-price{color:var(--amber)}
+.tier-note{font-family:var(--ff-mono);font-size:.6rem;color:var(--muted);letter-spacing:.1em;margin-bottom:36px}
+.tier-sep{height:1px;background:var(--border);margin-bottom:28px}
+
+.tier-list{list-style:none;display:flex;flex-direction:column;gap:11px;margin-bottom:40px}
+.tier-list li{
+  font-family:var(--ff-mono);font-size:.68rem;letter-spacing:.05em;color:var(--text);
+  display:flex;align-items:center;gap:10px;
+}
+.tier-list li::before{content:'—';color:var(--muted);flex-shrink:0}
+.tier.highlight .tier-list li::before{color:var(--cyan)}
+.tier-list li.off{color:var(--border);text-decoration:line-through}
+.tier-list li.off::before{content:'×';color:var(--border)}
+
+.tier-cta{
+  width:100%;padding:13px;cursor:none;font-family:var(--ff-mono);
+  font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  border:1px solid var(--border);background:transparent;color:var(--muted);
+  transition:all .2s;border-radius:2px;
+}
+.tier.highlight .tier-cta{border-color:var(--cyan);color:var(--cyan)}
+.tier-cta:hover{background:var(--white);border-color:var(--white);color:var(--bg)}
+.tier.highlight .tier-cta:hover{background:var(--cyan);border-color:var(--cyan);color:var(--bg)}
+.tier-badge-pill{
+  position:absolute;top:20px;right:20px;
+  background:var(--cyan);color:var(--bg);
+  font-family:var(--ff-mono);font-size:.55rem;letter-spacing:.18em;
+  padding:4px 12px;text-transform:uppercase;border-radius:2px;
+}
+
+/* ─── NETWORK ──────────────────────────────────── */
+.network{background:var(--bg);border-top:1px solid var(--border)}
+.network-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:80px;align-items:center;max-width:1160px;margin:0 auto}
+.net-canvas-box{
+  position:relative;height:400px;
+  border:1px solid var(--border);background:rgba(34,211,238,.02);
+}
+#net-canvas{width:100%;height:100%;display:block}
+.net-hud{
+  position:absolute;top:16px;left:16px;
+  font-family:var(--ff-mono);font-size:.6rem;letter-spacing:.1em;
+  color:var(--muted);line-height:2;
+}
+.net-hud b{color:var(--cyan);font-weight:400}
+.net-stats{display:flex;flex-direction:column;gap:0;margin-top:40px}
+.net-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 0;border-bottom:1px solid var(--border);
+}
+.net-row:first-child{border-top:1px solid var(--border)}
+.net-row-label{font-family:var(--ff-mono);font-size:.65rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.net-row-val{font-family:var(--ff-mono);font-size:.72rem;color:var(--white)}
+
+/* ─── TIMELINE ─────────────────────────────────── */
+.timeline{background:var(--surface);border-top:1px solid var(--border)}
+.tl-inner{max-width:760px;margin:0 auto}
+.tl-list{margin-top:60px;display:flex;flex-direction:column;gap:0;position:relative}
+.tl-list::before{
+  content:'';position:absolute;left:0;top:8px;bottom:0;width:1px;
+  background:linear-gradient(to bottom,var(--cyan),transparent);
+}
+.tl-item{padding:0 0 52px 36px;position:relative}
+.tl-item::before{
+  content:'';position:absolute;left:-4px;top:6px;
+  width:9px;height:9px;border-radius:50%;
+  background:var(--bg);border:1.5px solid var(--cyan);
+  box-shadow:0 0 0 3px rgba(34,211,238,.1);
+}
+.tl-year{font-family:var(--ff-mono);font-size:.65rem;letter-spacing:.2em;color:var(--cyan);margin-bottom:8px;text-transform:uppercase}
+.tl-h{font-family:var(--ff-display);font-size:1.5rem;color:var(--white);margin-bottom:8px;letter-spacing:.04em}
+.tl-p{font-size:.95rem;line-height:1.8;color:var(--muted);font-weight:300}
+
+/* ─── TESTIMONIALS ─────────────────────────────── */
+.testimonials{background:var(--bg);border-top:1px solid var(--border)}
+.testi-inner{max-width:1160px;margin:0 auto}
+.testi-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--border);border:1px solid var(--border);margin-top:64px;
+}
+.testi-card{
+  background:var(--bg);padding:44px 36px;
+  transition:background .3s;
+}
+.testi-card:hover{background:var(--surface)}
+.stars{display:flex;gap:3px;margin-bottom:22px}
+.stars span{color:var(--amber);font-size:.85rem}
+.testi-quote{
+  font-size:.98rem;line-height:1.85;color:var(--text);font-weight:300;
+  font-style:italic;margin-bottom:28px;
+  border-left:2px solid var(--border);padding-left:20px;
+  transition:border-color .3s;
+}
+.testi-card:hover .testi-quote{border-color:var(--cyan)}
+.testi-meta{display:flex;align-items:center;gap:14px}
+.testi-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:var(--surface);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--ff-mono);font-size:.7rem;color:var(--cyan);flex-shrink:0;
+}
+.testi-name{font-family:var(--ff-display);font-size:1rem;color:var(--white);letter-spacing:.04em}
+.testi-role{font-family:var(--ff-mono);font-size:.58rem;color:var(--muted);letter-spacing:.1em;margin-top:2px}
+
+/* ─── FAQ ──────────────────────────────────────── */
+.faq{background:var(--surface);border-top:1px solid var(--border)}
+.faq-inner{max-width:740px;margin:0 auto}
+.faq-list{margin-top:56px;display:flex;flex-direction:column;gap:0}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-item:first-child{border-top:1px solid var(--border)}
+.faq-btn{
+  width:100%;padding:22px 0;cursor:none;background:transparent;border:none;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;text-align:left;
+}
+.faq-q{font-family:var(--ff-body);font-size:1rem;color:var(--white);font-weight:400;line-height:1.4}
+.faq-item.open .faq-q{color:var(--cyan)}
+.faq-icon{
+  width:22px;height:22px;border:1px solid var(--border);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;color:var(--muted);flex-shrink:0;
+  transition:transform .3s,border-color .3s,color .3s;
+}
+.faq-item.open .faq-icon{transform:rotate(45deg);border-color:var(--cyan);color:var(--cyan)}
+.faq-ans{
+  max-height:0;overflow:hidden;
+  transition:max-height .45s cubic-bezier(.16,1,.3,1);
+}
+.faq-item.open .faq-ans{max-height:300px}
+.faq-ans-inner{padding:0 0 22px;font-size:.95rem;line-height:1.8;color:var(--muted);font-weight:300}
+
+/* ─── CTA ──────────────────────────────────────── */
+.cta{
+  padding:120px 5%;text-align:center;
+  background:var(--bg);border-top:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.cta::before{
+  content:'';position:absolute;left:50%;top:50%;
+  width:800px;height:400px;transform:translate(-50%,-50%);
+  background:radial-gradient(ellipse,rgba(34,211,238,.05) 0%,transparent 70%);
+  pointer-events:none;
+}
+.cta-eyebrow{
+  font-family:var(--ff-mono);font-size:.65rem;letter-spacing:.25em;
+  color:var(--muted);text-transform:uppercase;margin-bottom:20px;
+}
+.cta-title{
+  font-family:var(--ff-display);font-size:clamp(2.8rem,6vw,5.5rem);
+  color:var(--white);letter-spacing:.03em;line-height:.95;margin-bottom:16px;
+}
+.cta-title em{font-family:var(--ff-serif);font-style:italic;color:var(--cyan)}
+.cta-sub{font-size:1rem;color:var(--muted);line-height:1.8;max-width:440px;margin:0 auto 48px;font-weight:300}
+.cta-form{display:flex;max-width:440px;margin:0 auto 16px;gap:0}
+.cta-inp{
+  flex:1;background:var(--surface);border:1px solid var(--border);
+  border-right:none;color:var(--white);padding:14px 18px;
+  font-family:var(--ff-mono);font-size:.72rem;letter-spacing:.06em;outline:none;
+  transition:border-color .2s;border-radius:2px 0 0 2px;
+}
+.cta-inp:focus{border-color:var(--cyan)}
+.cta-inp::placeholder{color:var(--muted)}
+.cta-submit{
+  padding:14px 24px;background:var(--cyan);border:1px solid var(--cyan);
+  color:var(--bg);font-family:var(--ff-mono);font-size:.7rem;letter-spacing:.1em;
+  text-transform:uppercase;cursor:none;font-weight:400;
+  transition:background .2s;border-radius:0 2px 2px 0;
+}
+.cta-submit:hover{background:#0891b2;border-color:#0891b2}
+.cta-fine{font-family:var(--ff-mono);font-size:.58rem;color:var(--muted);letter-spacing:.12em}
+
+/* ─── FOOTER ───────────────────────────────────── */
+footer{
+  padding:40px 5%;border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;
+  background:var(--surface);
+}
+.foot-logo{font-family:var(--ff-display);font-size:1.1rem;color:var(--white);letter-spacing:.1em}
+.foot-copy{font-family:var(--ff-mono);font-size:.6rem;color:var(--muted);letter-spacing:.1em}
+.foot-links{list-style:none;display:flex;gap:24px}
+.foot-links a{font-family:var(--ff-mono);font-size:.6rem;color:var(--muted);text-decoration:none;letter-spacing:.1em;transition:color .2s}
+.foot-links a:hover{color:var(--white)}
+
+/* ─── SCROLL REVEAL ────────────────────────────── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+.delay-1{transition-delay:.1s}
+.delay-2{transition-delay:.2s}
+.delay-3{transition-delay:.3s}
+
+/* ─── RESPONSIVE ───────────────────────────────── */
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;padding-bottom:100px}
+  .hero-right{display:none}
+  .about-grid{grid-template-columns:1fr;gap:60px}
+  .features-grid{grid-template-columns:1fr 1fr}
+  .feat:nth-child(3n){border-right:1px solid var(--border)}
+  .feat:nth-child(2n){border-right:none}
+  .feat:nth-child(4){border-bottom:1px solid var(--border)}
+  .feat:nth-child(5){border-bottom:1px solid var(--border)}
+  .tiers-grid{grid-template-columns:1fr;gap:1px}
+  .network-grid{grid-template-columns:1fr}
+  .net-canvas-box{height:280px}
+  .testi-grid{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .stat-cell:nth-child(2){border-right:none}
+  .nav-links,.nav-pill{display:none}
+  .nav-hamburger{display:flex}
+}
+@media(max-width:560px){
+  .features-grid{grid-template-columns:1fr}
+  .feat:nth-child(n){border-right:none}
+  .hero-actions{flex-direction:column;align-items:flex-start}
+  .stats-row{grid-template-columns:1fr}
+  .stat-cell{border-right:none}
+  .cta-form{flex-direction:column}
+  .cta-inp{border-right:1px solid var(--border);border-bottom:none;border-radius:2px 2px 0 0}
+  .cta-submit{border-radius:0 0 2px 2px}
+}
+</style>
+</head>
+<body>
+
+<div id="noise"></div>
+<div id="cur"><div id="cur-ring"></div></div>
+<div id="cur-dot"></div>
+
+<!-- ══ NAV ══════════════════════════════════════ -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="logo-mark"></div>
+    NEXUS-7
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">System</a></li>
+    <li><a href="#features">Modules</a></li>
+    <li><a href="#tiers">Tiers</a></li>
+    <li><a href="#testimonials">Hosts</a></li>
+    <li><a href="#timeline">History</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <button class="nav-pill">Initialize</button>
+  <div class="nav-hamburger"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- ══ HERO ══════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-bg-text">NX7</div>
+
+  <div class="hero-left">
+    <div class="hero-eyebrow">
+      Build 4.2.0 &nbsp;·&nbsp; Neural OS
+      <span class="blink">●</span> Online
+    </div>
+    <h1 class="hero-h1">
+      Beyond<br>Human
+      <em>Augmentation<br>Redefined</em>
+    </h1>
+    <p class="hero-sub">
+      The line between flesh and machine is a frontier — not a limit.
+      NEXUS-7 fuses cortical mesh architecture with adaptive bio-mechanics,
+      engineering the next phase of conscious existence.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-fill">Begin Augmentation</button>
+      <button class="btn-ghost">View Schematics</button>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-spec-block">
+      <div><div class="spec-k">Core Architecture</div><div class="spec-v">Quantum-Neural Hybrid v3</div></div>
+      <div><div class="spec-k">Processing Nodes</div><div class="spec-v">128 × Bio-RISC-IX</div></div>
+    </div>
+    <div class="hero-spec-block">
+      <div><div class="spec-k">Signal Latency</div><div class="spec-v">0.4 ms</div></div>
+      <div><div class="spec-k">Neural Accuracy</div><div class="spec-v">99.97%</div></div>
+    </div>
+    <div class="hero-spec-block">
+      <div><div class="spec-k">Power Source</div><div class="spec-v">Kinetic + Bioelectric</div></div>
+      <div><div class="spec-k">Encryption</div><div class="spec-v">AES-4096 Neural Key</div></div>
+    </div>
+    <div class="hero-spec-block">
+      <div><div class="spec-k">OS Kernel</div><div class="spec-v">NEXUS-OS 4.2.0-LTS</div></div>
+      <div><div class="spec-k">Uptime SLA</div><div class="spec-v">99.999%</div></div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-bar"></div>
+  </div>
+</section>
+
+<!-- ══ MARQUEE ═══════════════════════════════════ -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span>Neural Augmentation</span><span class="sep">◆</span>
+    <span>Cortex Mesh Implants</span><span class="sep">◆</span>
+    <span>Quantum Processing</span><span class="sep">◆</span>
+    <span>Bio-Electric Power</span><span class="sep">◆</span>
+    <span>Adaptive Neural OS</span><span class="sep">◆</span>
+    <span>Kinetic Amplification</span><span class="sep">◆</span>
+    <span>Mesh Network</span><span class="sep">◆</span>
+    <span>AES-4096 Encryption</span><span class="sep">◆</span>
+    <!-- duplicate for seamless loop -->
+    <span>Neural Augmentation</span><span class="sep">◆</span>
+    <span>Cortex Mesh Implants</span><span class="sep">◆</span>
+    <span>Quantum Processing</span><span class="sep">◆</span>
+    <span>Bio-Electric Power</span><span class="sep">◆</span>
+    <span>Adaptive Neural OS</span><span class="sep">◆</span>
+    <span>Kinetic Amplification</span><span class="sep">◆</span>
+    <span>Mesh Network</span><span class="sep">◆</span>
+    <span>AES-4096 Encryption</span><span class="sep">◆</span>
+  </div>
+</div>
+
+<!-- ══ STATS ROW ══════════════════════════════════ -->
+<div class="stats-row reveal">
+  <div class="stat-cell">
+    <span class="stat-num"><span class="ctr" data-t="2.4" data-d="1">0</span><span class="unit">T</span></span>
+    <span class="stat-desc">Operations / Sec</span>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-num"><span class="ctr" data-t="99.97" data-d="2">0</span><span class="unit">%</span></span>
+    <span class="stat-desc">Neural Accuracy</span>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-num"><span class="ctr" data-t="0.4" data-d="1">0</span><span class="unit">ms</span></span>
+    <span class="stat-desc">Signal Latency</span>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-num"><span class="ctr" data-t="847" data-d="0">0</span><span class="unit">+</span></span>
+    <span class="stat-desc">Augmented Hosts</span>
+  </div>
+</div>
+
+<!-- ══ ABOUT ══════════════════════════════════════ -->
+<section class="about" id="about">
+  <div class="about-grid">
+    <div class="reveal">
+      <div class="s-label">System Overview</div>
+      <h2 class="s-title">Engineered<br>for <em>Tomorrow</em></h2>
+      <div style="margin-top:24px">
+        <p class="about-text"><p>NEXUS-7 is a <strong>next-generation augmentation platform</strong> integrating cortical mesh implants, synthetic musculature, and distributed AI processing — all unified through a single adaptive neural OS.</p>
+        <p>Every component is reverse-engineered from biological systems, then optimised beyond natural limits. From sub-millisecond reflex amplification to persistent memory encoding across distributed nodes — <strong>this is not enhancement. This is reinvention.</strong></p>
+        <p>The system continuously adapts, learning the host's behavioural patterns and physiological rhythms, becoming indistinguishable from the self over time.</p></div>
+    </div>
+    <div class="reveal delay-1">
+      <div class="s-label">Tech Specifications</div>
+      <table class="spec-table">
+        <tr><td>Core Architecture</td><td>Quantum-Neural Hybrid v3</td></tr>
+        <tr><td>Processing Nodes</td><td>128 × Bio-RISC-IX</td></tr>
+        <tr><td>Memory Substrate</td><td>Synthetic Hippocampus Array</td></tr>
+        <tr><td>Power Source</td><td>Kinetic + Bioelectric Hybrid</td></tr>
+        <tr><td>OS Kernel</td><td>NEXUS-OS 4.2.0-LTS</td></tr>
+        <tr><td>Encryption</td><td>AES-4096 Neural Key</td></tr>
+        <tr><td>Uptime SLA</td><td>99.999% Guaranteed</td></tr>
+        <tr><td>Warranty</td><td>Lifetime (Host Lifespan)</td></tr>
+      </table>
+      <div class="cap-list" id="caplist">
+        <div class="cap-item">
+          <div class="cap-header"><span class="cap-name">Cognitive Speed</span><span class="cap-pct">94%</span></div>
+          <div class="cap-bar"><div class="cap-fill c1" style="--w:.94;transform:scaleX(var(--w))"></div></div>
+        </div>
+        <div class="cap-item">
+          <div class="cap-header"><span class="cap-name">Reflex Amplification</span><span class="cap-pct">87%</span></div>
+          <div class="cap-bar"><div class="cap-fill c2" style="--w:.87;transform:scaleX(var(--w))"></div></div>
+        </div>
+        <div class="cap-item">
+          <div class="cap-header"><span class="cap-name">System Resilience</span><span class="cap-pct">99%</span></div>
+          <div class="cap-bar"><div class="cap-fill c3" style="--w:.99;transform:scaleX(var(--w))"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FEATURES ═══════════════════════════════════ -->
+<section class="features" id="features">
+  <div class="reveal">
+    <div class="s-label">Core Modules</div>
+    <h2 class="s-title">Six Pillars of <em>Augmentation</em></h2>
+  </div>
+  <div class="features-grid">
+    <div class="feat reveal"><span class="feat-num">01</span><span class="feat-icon">🧠</span><div class="feat-title">Cortex Mesh</div><p class="feat-body">Direct neural interface — 128,000 electrode implants mapping thought-to-action with zero perceptible latency.</p></div>
+    <div class="feat reveal delay-1"><span class="feat-num">02</span><span class="feat-icon">⚡</span><div class="feat-title">Kinetic Core</div><p class="feat-body">Titanium-carbon musculature augments physical output by 340%. Force-dampening fibres prevent structural overload.</p></div>
+    <div class="feat reveal delay-2"><span class="feat-num">03</span><span class="feat-icon">👁</span><div class="feat-title">Oculus Prime</div><p class="feat-body">Retinal AR overlay with 8K/120fps, thermal vision, EM spectrum analysis, and 40× optical zoom.</p></div>
+    <div class="feat reveal"><span class="feat-num">04</span><span class="feat-icon">🔐</span><div class="feat-title">Sentinel Shield</div><p class="feat-body">Distributed threat detection across all systems. Biological firewall rejects intrusion at the cellular level.</p></div>
+    <div class="feat reveal delay-1"><span class="feat-num">05</span><span class="feat-icon">🌐</span><div class="feat-title">Mesh Network</div><p class="feat-body">Encrypted peer-to-peer comms between augmented hosts. 800 m direct range · Global via relay nodes.</p></div>
+    <div class="feat reveal delay-2"><span class="feat-num">06</span><span class="feat-icon">🔄</span><div class="feat-title">Adaptive OS</div><p class="feat-body">Self-evolving neural kernel patches in real-time. Learns your cognitive rhythm within 72 hours of activation.</p></div>
+  </div>
+</section>
+
+<!-- ══ TIERS ══════════════════════════════════════ -->
+<section class="tiers" id="tiers">
+  <div class="tiers-inner">
+    <div class="reveal">
+      <div class="s-label">Augmentation Tiers</div>
+      <h2 class="s-title">Choose Your <em>Protocol</em></h2>
+      <p class="s-body">All packages include lifetime OS updates, 24/7 neural monitoring, and emergency override access. Slots are limited per quarter.</p>
+    </div>
+    <div class="tiers-grid">
+
+      <div class="tier reveal">
+        <div class="tier-tag">Entry Protocol</div>
+        <div class="tier-name">Neural Seed</div>
+        <div class="tier-price">$12K</div>
+        <div class="tier-note">One-time implant cost</div>
+        <div class="tier-sep"></div>
+        <ul class="tier-list">
+          <li>32-Node Cortex Interface</li>
+          <li>Reflex Amplification (1.4×)</li>
+          <li>Neural OS — Core Edition</li>
+          <li>Standard Oculus Overlay (HD)</li>
+          <li>12-Month Support SLA</li>
+          <li class="off">Mesh Network Access</li>
+          <li class="off">Kinetic Core Modules</li>
+          <li class="off">Elite Neural Encryption</li>
+        </ul>
+        <button class="tier-cta">Request Access</button>
+      </div>
+
+      <div class="tier highlight reveal delay-1">
+        <div class="tier-badge-pill">Recommended</div>
+        <div class="tier-tag">Standard Protocol</div>
+        <div class="tier-name">Nexus Core</div>
+        <div class="tier-price">$48K</div>
+        <div class="tier-note">One-time implant cost</div>
+        <div class="tier-sep"></div>
+        <ul class="tier-list">
+          <li>128-Node Full Cortex Mesh</li>
+          <li>Reflex Amplification (3×)</li>
+          <li>Neural OS — Pro Edition</li>
+          <li>Oculus Prime 4K/60fps</li>
+          <li>Titanium-Carbon Musculature (Partial)</li>
+          <li>Mesh Network Access (Local)</li>
+          <li>AES-2048 Neural Encryption</li>
+          <li class="off">Quantum Processing Array</li>
+        </ul>
+        <button class="tier-cta">Request Access</button>
+      </div>
+
+      <div class="tier tier-elite reveal delay-2">
+        <div class="tier-tag">Elite Protocol</div>
+        <div class="tier-name">Nexus-7 Full</div>
+        <div class="tier-price">$120K</div>
+        <div class="tier-note">One-time implant cost</div>
+        <div class="tier-sep"></div>
+        <ul class="tier-list">
+          <li>512-Node Quantum Cortex Array</li>
+          <li>Max Reflex Amplification (6×)</li>
+          <li>Neural OS — Sovereign Edition</li>
+          <li>Oculus Prime 8K/120fps + Thermal</li>
+          <li>Full Titanium-Carbon Musculature</li>
+          <li>Global Mesh Network Access</li>
+          <li>AES-4096 Quantum Encryption</li>
+          <li>Lifetime Priority Support</li>
+        </ul>
+        <button class="tier-cta">Request Access</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ NETWORK ════════════════════════════════════ -->
+<section class="network" id="network">
+  <div class="network-grid">
+    <div class="reveal">
+      <div class="s-label">Global Mesh Network</div>
+      <h2 class="s-title">Live <em>Host Network</em></h2>
+      <p class="s-body" style="margin-bottom:0">Every NEXUS-7 host is a node in a distributed intelligence mesh — anonymised, encrypted, and self-healing. The network routes cognitive data, threat signals, and OS updates across all connected units in real time.</p>
+      <div class="net-stats">
+        <div class="net-row"><span class="net-row-label">Active Nodes</span><span class="net-row-val">847 hosts · 34 countries</span></div>
+        <div class="net-row"><span class="net-row-label">Threats Blocked</span><span class="net-row-val">14,829 this week</span></div>
+        <div class="net-row"><span class="net-row-label">Intra-Node Latency</span><span class="net-row-val">0.4 ms average</span></div>
+        <div class="net-row"><span class="net-row-label">Global Latency</span><span class="net-row-val">8 ms via relay</span></div>
+      </div>
+    </div>
+    <div class="net-canvas-box reveal delay-1">
+      <div class="net-hud">NEXUS MESH // LIVE<br>NODES: <b>847</b><br>STATUS: <b>NOMINAL</b></div>
+      <canvas id="net-canvas"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TIMELINE ═══════════════════════════════════ -->
+<section class="timeline" id="timeline">
+  <div class="tl-inner">
+    <div class="reveal">
+      <div class="s-label">Development Log</div>
+      <h2 class="s-title">Road to <em>Singularity</em></h2>
+    </div>
+    <div class="tl-list">
+      <div class="tl-item reveal">
+        <div class="tl-year">2019 · Phase Alpha</div>
+        <div class="tl-h">Project Genesis</div>
+        <p class="tl-p">Initial research into bio-compatible electrode arrays. First successful 32-node cortical mapping in controlled simulation environments.</p>
+      </div>
+      <div class="tl-item reveal delay-1">
+        <div class="tl-year">2021 · Phase Beta</div>
+        <div class="tl-h">Prototype Integration</div>
+        <p class="tl-p">First full-system implant in live host. Cortex mesh and kinetic core activated simultaneously. Response latency: 2.3 ms — six times below human baseline.</p>
+      </div>
+      <div class="tl-item reveal delay-2">
+        <div class="tl-year">2023 · Phase Gamma</div>
+        <div class="tl-h">NEXUS-OS 3.0 Launch</div>
+        <p class="tl-p">Adaptive learning kernel deployed. Hosts reported perceived seamlessness within 48 hours of activation. Over 200 successful deployments completed.</p>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-year">2025 · Phase Delta</div>
+        <div class="tl-h">NEXUS-7 Goes Live</div>
+        <p class="tl-p">Quantum-neural hybrid architecture operational. Mesh networking across 847 hosts. Full-spectrum augmentation suite now available to vetted candidates.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TESTIMONIALS ═══════════════════════════════ -->
+<section class="testimonials" id="testimonials">
+  <div class="testi-inner">
+    <div class="reveal">
+      <div class="s-label">Host Testimonials</div>
+      <h2 class="s-title">Voices from the <em>Augmented</em></h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal">
+        <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <p class="testi-quote">"Within 72 hours of activation, I couldn't tell where the machine ended and I began. My reaction time dropped from 280 ms to 38 ms. NEXUS didn't enhance me — it redefined me entirely."</p>
+        <div class="testi-meta">
+          <div class="testi-avatar">KR</div>
+          <div><div class="testi-name">Kael Rynder</div><div class="testi-role">Combat Specialist · Tier 3 · Host NX7-00214</div></div>
+        </div>
+      </div>
+      <div class="testi-card reveal delay-1">
+        <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <p class="testi-quote">"As a neurosurgeon I was sceptical. After the NEXUS Core implant my procedural accuracy improved by 41%. The Oculus overlay maps vascular structures I simply couldn't see before."</p>
+        <div class="testi-meta">
+          <div class="testi-avatar">DM</div>
+          <div><div class="testi-name">Dr. Deva Mira</div><div class="testi-role">Neurosurgeon · Tier 2 · Host NX7-00089</div></div>
+        </div>
+      </div>
+      <div class="testi-card reveal delay-2">
+        <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <p class="testi-quote">"The Adaptive OS learned my cognitive rhythm in 48 hours. I now process six parallel data streams without fatigue. It isn't a product. It's a second brain that remembers everything."</p>
+        <div class="testi-meta">
+          <div class="testi-avatar">ZV</div>
+          <div><div class="testi-name">Zara Voss</div><div class="testi-role">Intelligence Analyst · Tier 3 · Host NX7-00331</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FAQ ════════════════════════════════════════ -->
+<section class="faq" id="faq">
+  <div class="faq-inner">
+    <div class="reveal">
+      <div class="s-label">Frequently Asked</div>
+      <h2 class="s-title">Protocol <em>Questions</em></h2>
+    </div>
+    <div class="faq-list reveal delay-1">
+      <div class="faq-item">
+        <button class="faq-btn"><span class="faq-q">Is the augmentation procedure reversible?</span><span class="faq-icon">+</span></button>
+        <div class="faq-ans"><div class="faq-ans-inner">The cortex mesh implants are designed as permanent cognitive infrastructure. Physical removal is technically possible but results in regression to pre-augmentation baseline. Our medical team conducts a full risk assessment prior to any reversal. 94.3% of hosts who inquire about reversal choose to remain augmented after consultation.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn"><span class="faq-q">How long does the augmentation procedure take?</span><span class="faq-icon">+</span></button>
+        <div class="faq-ans"><div class="faq-ans-inner">The full NEXUS-7 protocol takes 18–22 hours across two surgical sessions. Neural Seed implants require a single 6-hour session. Post-operative integration monitoring takes a further 72 hours. Most hosts report full cognitive clarity within 5–7 days of activation.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn"><span class="faq-q">Can the system be hacked or remotely controlled?</span><span class="faq-icon">+</span></button>
+        <div class="faq-ans"><div class="faq-ans-inner">NEXUS-7 uses AES-4096 quantum encryption on all neural traffic. The Sentinel Shield monitors for intrusion at the biological interface level — not just software. Zero confirmed breaches across all 847 deployed hosts. Each system is keyed to the host's unique bioelectric signature, making remote override computationally infeasible.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn"><span class="faq-q">What happens if the system loses power?</span><span class="faq-icon">+</span></button>
+        <div class="faq-ans"><div class="faq-ans-inner">NEXUS-7 operates on a hybrid kinetic-bioelectric system, charging from body heat and movement with a 72-hour emergency micro-capacitor reserve. In a critical failure event all augmentation systems enter passive dormancy, leaving the host's biological functions entirely unaffected.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn"><span class="faq-q">How is my neural data stored and handled?</span><span class="faq-icon">+</span></button>
+        <div class="faq-ans"><div class="faq-ans-inner">All cognitive data is encrypted at the source — inside the cortex mesh itself — before any transmission. Network-shared data is anonymised and used only for collective threat response and OS optimisation. NEXUS Systems holds zero raw neural data on external servers. You are the only entity with root access to your own mind.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn"><span class="faq-q">Who qualifies for NEXUS-7 augmentation?</span><span class="faq-icon">+</span></button>
+        <div class="faq-ans"><div class="faq-ans-inner">Candidates must be 21+, pass a neurological compatibility screening, and complete a 30-day psychological evaluation. NEXUS-7 is available by invitation or vetted application only. Priority is given to candidates in high-performance roles — defence, medicine, intelligence, and advanced engineering.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ════════════════════════════════════════ -->
+<section class="cta" id="contact">
+  <div class="reveal">
+    <p class="cta-eyebrow">Uplink Terminal</p>
+    <h2 class="cta-title">Ready to<br><em>Transcend?</em></h2>
+    <p class="cta-sub">Join the vetted candidates list. Augmentation slots are allocation-based. Priority access for verified applicants.</p>
+    <div class="cta-form">
+      <input class="cta-inp" type="email" placeholder="Enter secure comms address" autocomplete="off"/>
+      <button class="cta-submit">Uplink</button>
+    </div>
+    <p class="cta-fine">Data encrypted · AES-4096 · Zero retention policy</p>
+  </div>
+</section>
+
+<!-- ══ FOOTER ═════════════════════════════════════ -->
+<footer>
+  <div class="foot-logo">NEXUS-7</div>
+  <p class="foot-copy">© 2025 Nexus Systems Inc. — All schematics classified</p>
+  <ul class="foot-links">
+    <li><a href="#">Privacy Protocol</a></li>
+    <li><a href="#">Terms of Host</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+</footer>
+
+<!-- ══ SCRIPTS ════════════════════════════════════ -->
+<script>
+/* ── Custom cursor ──────────────────────────── */
+const ring = document.getElementById('cur-ring');
+const dot  = document.getElementById('cur-dot');
+const cur  = document.getElementById('cur');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function anim(){
+  rx+=(mx-rx)*.16; ry+=(my-ry)*.16;
+  cur.style.left=rx+'px'; cur.style.top=ry+'px';
+  dot.style.left=mx+'px'; dot.style.top=my+'px';
+  requestAnimationFrame(anim);
+})();
+document.querySelectorAll('button,a,input').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.width='60px';ring.style.height='60px'});
+  el.addEventListener('mouseleave',()=>{ring.style.width='40px';ring.style.height='40px'});
+});
+
+/* ── Hero particle canvas ───────────────────── */
+const hc=document.getElementById('hero-canvas');
+const hx=hc.getContext('2d');
+let HW,HH,pts=[];
+function rsHero(){HW=hc.width=hc.offsetWidth;HH=hc.height=hc.offsetHeight}
+rsHero();window.addEventListener('resize',rsHero);
+for(let i=0;i<90;i++)pts.push({x:Math.random()*HW,y:Math.random()*HH,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.2+.4,a:Math.random()*.4+.1});
+(function drawHero(){
+  hx.clearRect(0,0,HW,HH);
+  pts.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=HW;if(p.x>HW)p.x=0;
+    if(p.y<0)p.y=HH;if(p.y>HH)p.y=0;
+    hx.beginPath();hx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    hx.fillStyle=`rgba(34,211,238,${p.a})`;hx.fill();
+  });
+  for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+    const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.hypot(dx,dy);
+    if(d<110){hx.beginPath();hx.moveTo(pts[i].x,pts[i].y);hx.lineTo(pts[j].x,pts[j].y);hx.strokeStyle=`rgba(34,211,238,${.1*(1-d/110)})`;hx.lineWidth=.6;hx.stroke();}
+  }
+  requestAnimationFrame(drawHero);
+})();
+
+/* ── Network canvas ─────────────────────────── */
+const nc=document.getElementById('net-canvas');
+const nx=nc.getContext('2d');
+let NW,NH;
+function rsNet(){NW=nc.width=nc.offsetWidth;NH=nc.height=nc.offsetHeight}
+rsNet();window.addEventListener('resize',rsNet);
+const npts=Array.from({length:30},()=>({x:Math.random(),y:Math.random(),vx:(Math.random()-.5)*.0006,vy:(Math.random()-.5)*.0006,pulse:Math.random()*Math.PI*2}));
+(function drawNet(){
+  nx.clearRect(0,0,NW,NH);
+  npts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>1)p.vx*=-1;if(p.y<0||p.y>1)p.vy*=-1;p.pulse+=.018});
+  for(let i=0;i<npts.length;i++)for(let j=i+1;j<npts.length;j++){
+    const dx=(npts[i].x-npts[j].x)*NW,dy=(npts[i].y-npts[j].y)*NH,d=Math.hypot(dx,dy);
+    if(d<NW*.3){nx.beginPath();nx.moveTo(npts[i].x*NW,npts[i].y*NH);nx.lineTo(npts[j].x*NW,npts[j].y*NH);nx.strokeStyle=`rgba(34,211,238,${.15*(1-d/(NW*.3))})`;nx.lineWidth=.7;nx.stroke();}
+  }
+  npts.forEach((p,i)=>{
+    const pulse=.5+.5*Math.sin(p.pulse);
+    nx.beginPath();nx.arc(p.x*NW,p.y*NH,2*(1+.3*pulse),0,Math.PI*2);
+    nx.fillStyle=i%6===0?`rgba(244,63,94,${.7+.3*pulse})`:`rgba(34,211,238,${.7+.3*pulse})`;
+    nx.fill();
+  });
+  requestAnimationFrame(drawNet);
+})();
+
+/* ── Scroll reveal ──────────────────────────── */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');if(e.target.querySelector('.cap-list'))e.target.querySelector('.cap-list').classList.add('animate')}});
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+/* Cap list observer */
+const capEl=document.getElementById('caplist');
+if(capEl){
+  const co=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)capEl.classList.add('animate')})},{threshold:.3});
+  co.observe(capEl);
+}
+
+/* ── Counters ───────────────────────────────── */
+const ctrObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting&&!e.target.dataset.done){
+      e.target.dataset.done=1;
+      const t=parseFloat(e.target.dataset.t),d=parseInt(e.target.dataset.d);
+      let s=null;
+      (function step(ts){if(!s)s=ts;const p=Math.min((ts-s)/1600,1);e.target.textContent=(p*t).toFixed(d);if(p<1)requestAnimationFrame(step)})(performance.now());
+    }
+  });
+},{threshold:.4});
+document.querySelectorAll('.ctr').forEach(el=>ctrObs.observe(el));
+
+/* ── FAQ accordion ──────────────────────────── */
+document.querySelectorAll('.faq-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const item=btn.closest('.faq-item');
+    const open=item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i=>i.classList.remove('open'));
+    if(!open)item.classList.add('open');
+  });
+});
+
+/* ── CTA submit ─────────────────────────────── */
+document.querySelector('.cta-submit').addEventListener('click',()=>{
+  const inp=document.querySelector('.cta-inp');
+  if(inp.value.includes('@')){
+    inp.value='';inp.placeholder='Uplink established — standby for contact';inp.style.borderColor='var(--cyan)';
+  }else{
+    inp.style.borderColor='var(--red)';inp.placeholder='Invalid address — please retry';inp.value='';
+  }
+});
+</script>
+</body>
+</html>
